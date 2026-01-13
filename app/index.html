@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language to Sentence</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        .container-fluid {
+            margin-top: 30px;
+        }
+        #video-container {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        #video-container.capturing {
+            border: 4px solid #FF6B6B !important;
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #controls-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            color: #007bff;
+        }
+        .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        #replay {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        #replay:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        #capture-info {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        #timer {
+            font-size: 2.5em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #FF6B6B;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+            display: none;
+        }
+        #capture-status {
+            font-size: 1.2em;
+            font-weight: 600;
+            min-height: 25px;
+        }
+        .status-success {
+            color: #28a745 !important;
+        }
+        .status-error {
+            color: #dc3545 !important;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center mb-4">👐 Sign Language to Sentence</h1>
+        <div class="row">
+            <div class="col-md-8">
+                <div id="video-container">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="controls-container">
+                    <h3>📹 Live Prediction</h3>
+                    <p><strong>Gesture:</strong> <span id="live-gesture" class="text-primary font-weight-bold"></span></p>
+                    <p><strong>Confidence:</strong> <span id="confidence" class="text-success"></span></p>
+                    
+                    <!-- ✅ NEW TIMER SECTION -->
+                    <div id="capture-info">
+                        <p><strong>Status:</strong> <span id="capture-status">Ready to capture</span></p>
+                        <p class="mb-0"><strong>Timer:</strong> <span id="timer">5</span></p>
+                    </div>
+                    
+                    <button id="capture" class="btn btn-primary btn-lg btn-block">🎯 Start 5s Capture</button>
+                    <button id="clear" class="btn btn-danger btn-lg btn-block">🗑️ Clear All</button>
+                    
+                    <hr>
+                    
+                    <h3>🎯 Captured Gestures (<span id="gesture-count">0</span>)</h3>
+                    <p id="gestures" class="text-info font-weight-bold bg-light p-2 rounded">No gestures captured</p>
+                    <button id="form-sentence" class="btn btn-success btn-lg btn-block">✨ Form Sentence</button>
+                    
+                    <hr>
+                    
+                    <h3>💬 Formed Sentence</h3>
+                    <p id="sentence" class="text-monospace bg-warning p-3 rounded font-weight-bold fs-5">Click "Form Sentence" to generate</p>
+                    <button id="replay" class="btn btn-success btn-lg btn-block">🔊 Replay Audio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1635989137/holistic.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.8/dist/tf-tflite.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

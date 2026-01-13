@@ -1,0 +1,45 @@
+# =====================================================
+# SIGN LANGUAGE GESTURE DETECTION - COMPLETE REQUIREMENTS
+# Python 3.10 | MediaPipe + TensorFlow + OpenCV + Sentence App
+# =====================================================
+
+# Core Computer Vision (PHASE 1-2)
+opencv-python>=4.7.0,<4.10.0
+mediapipe>=0.10.0,<0.11.0
+
+# Data Processing & ML (PHASE 3-4)
+numpy>=1.23.0,<2.0.0
+pandas>=1.5.0,<3.0.0
+scikit-learn>=1.3.0,<2.0.0
+
+# Deep Learning (PHASE 4-5)
+tensorflow==2.12.0
+
+# Visualization & Analysis (PHASE 4-5)
+matplotlib>=3.6.0,<4.0.0
+seaborn>=0.12.0,<0.14.0
+
+# Progress Bars & Utilities (PHASE 2-3)
+tqdm>=4.65.0
+
+# =====================================================
+# SENTENCE APP (PHASE 6+ Frontend/Backend)
+# =====================================================
+flask>=2.3.0,<3.0.0
+flask-cors>=4.0.0,<5.0.0
+
+# =====================================================
+# DEVELOPMENT (Optional)
+# =====================================================
+# Jupyter (for notebooks if needed later)
+# jupyterlab>=3.6.0,<4.2.0
+# ipywidgets>=8.0.0
+
+# =====================================================
+# Notes:
+# - Tested with Python 3.10.x (MediaPipe official support)
+# - TensorFlow 2.12.0: Stable for Python 3.10 + MediaPipe
+# - No GPU/CUDA required (CPU optimized)
+# - Total install size: ~1.5GB
+# - Flask + CORS added for sentence_app/backend.py web interface
+# =====================================================
