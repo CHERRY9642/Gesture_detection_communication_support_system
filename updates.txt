@@ -1,0 +1,235 @@
+Ex :
+
+notebooks/
+│   ├── 01_data_collection.ipynb
+│   ├── 02_data_cleaning.ipynb
+│   ├── 03_eda_feature_engineering.ipynb
+│   ├── 04_modeling.ipynb
+│   ├── 05_logistic_regression_training.ipynb
+│   ├── 06_best_alternative_model_linearSVM.ipynb
+│   ├── 07_model_comparison_validation.ipynb
+│   ├── 08_model_testing_inference.ipynb
+│   ├── 09_roc_auc_comparison.ipynb
+│   ├── 10_threshold_tuning.ipynb
+│   ├── 11_evaluation_and_stress_testing.ipynb
+│   └── DETAILS.ipynb 
+
+like the above geneate the notebooks related to this project with code .
+this is the process of my model :
+To extend your system with more images and more gesture classes, treat it as a new training round on an expanded dataset while keeping the same pipeline.
+
+Here is the process, step‑by‑step, aligned with your current structure.
+
+1. Plan new classes and update labels
+Decide your new gesture set, e.g.:
+
+Existing: afraid, agree, assistance, college, from, which, work, you
+
+New: help, thank_you, stop, yes, no, etc.
+
+Update keypoint_classifier/keypoint_classifier_label.csv:
+
+Append new lines with new class IDs:
+
+text
+0,afraid
+1,agree
+2,assistance
+3,college
+4,from
+5,which
+6,work
+7,you
+8,help
+9,thank_you
+10,stop
+...
+Keep IDs fixed and contiguous (0,1,2,…).
+
+2. Expand the image dataset
+In dataset/:
+
+For each new class, create folders like before:
+
+dataset/help/User_1/ … User_6/
+
+dataset/thank_you/User_1/ … User_6/
+
+Capture/collect images with:
+
+Same resolution / camera as before if possible.
+
+150 images per user per class (or at least 80–100).
+
+Target: similar number of samples per class to avoid imbalance.
+
+3. Re‑run PHASE 1 checks
+From keypoint_classifier/:
+
+Update check_images.py class list to include new classes.
+
+Run python check_images.py and ensure:
+
+Each class has correct User_* subfolders.
+
+Image counts are as expected.
+
+No corrupted images.
+
+4. Re‑extract landmarks for all classes
+Because you’re changing classes and adding images, it’s better to regenerate all landmark CSVs.
+
+From notebooks/:
+
+Update extract_landmarks.py:
+
+Extend class_mapping to include new classes with the same IDs as in the label CSV.
+
+Example:
+
+python
+class_mapping = {
+    'afraid': 0,
+    'agree': 1,
+    ...
+    'you': 7,
+    'help': 8,
+    'thank_you': 9,
+    'stop': 10
+}
+Optionally delete old raw landmark files:
+
+keypoint_classifier/raw_landmarks/*.csv (or move to backup)
+
+Run:
+
+bash
+cd notebooks
+python extract_landmarks.py
+This creates updated per‑class CSVs in ../keypoint_classifier/raw_landmarks/ for all classes, including new ones.
+
+5. Re‑check landmark quality
+In keypoint_classifier/:
+
+Update check_landmarks_quality.py if it uses an explicit class list.
+
+Run:
+
+bash
+cd keypoint_classifier
+python check_landmarks_quality.py
+Ensure new classes also have good landmark counts and no NaNs.
+
+6. Merge into a new training dataset
+In notebooks/:
+
+Update merge_datasets.py:
+
+Extend class_mapping to include new classes.
+
+Run:
+
+bash
+cd notebooks
+python merge_datasets.py
+This regenerates:
+
+keypoint_classifier/keypoint.csv with:
+
+Rows = total valid samples across all (old + new) classes.
+
+Columns = 1 (class) + 42 features.
+
+7. Retrain the MLP for the new class count
+In src/train_mlp.py:
+
+Update:
+
+num_classes = <new total> (e.g., 11 if you added 3 new classes).
+
+class_names = [...] list to include the new labels in correct order.
+
+Run:
+
+bash
+cd src
+python train_mlp.py
+What happens:
+
+The model is retrained from scratch on the expanded dataset.
+
+You get new test accuracy and updated plots.
+
+New model saved to:
+
+../keypoint_classifier/models/keypoint_classifier/keypoint_classifier.hdf5
+
+If you want true fine‑tuning (start from old weights instead of fresh training):
+
+Load the old .hdf5 model.
+
+Replace final Dense layer with a new Dense of size new_num_classes.
+
+Freeze earlier layers and train with smaller learning rate.
+But for a small MLP and bigger dataset, retraining from scratch is usually simpler and fast.
+
+8. Re‑export TFLite and validate
+In src/:
+
+Run:
+
+bash
+python export_tflite.py
+python validate_tflite.py
+Ensure:
+
+New TFLite model matches Keras accuracy closely.
+
+Output layer size is now new_num_classes.
+
+9. Update the real‑time app
+In src/app_realtime.py:
+
+No major change needed if your label CSV is updated, because it reads labels from:
+
+../keypoint_classifier/keypoint_classifier_label.csv
+
+Just make sure:
+
+Label CSV includes new classes in the same ID order as training.
+
+app_realtime.py does not hard‑code class names; it uses the CSV mapping (which it already does in your last version).
+
+Then run:
+
+bash
+cd src
+python app_realtime.py
+Now the overlay should show new gestures (e.g., help, thank_you, etc.) as you perform them.
+
+10. Short checklist for fine‑tuning with new classes
+Update label file
+keypoint_classifier/keypoint_classifier_label.csv (add new classes + IDs).
+
+Add images
+dataset/<new_class>/User_1..User_6/.
+
+Update mappings
+extract_landmarks.py and merge_datasets.py class_mapping.
+
+Re‑extract landmarks
+python notebooks/extract_landmarks.py.
+
+Re‑merge dataset
+python notebooks/merge_datasets.py.
+
+Retrain model
+Update num_classes and class_names → python src/train_mlp.py.
+
+Re‑export & validate TFLite
+python src/export_tflite.py and python src/validate_tflite.py.
+
+Test real‑time
+python src/app_realtime.py.
+
+based on the provided code update the notebooks folders and give the sutable name based on my project

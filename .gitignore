@@ -1,0 +1,14 @@
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Datasets and large media files (add your dataset/ folder)
+dataset/
+.vscode/
+Hand Gesture Recognition.docx
