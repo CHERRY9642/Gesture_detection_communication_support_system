@@ -17,7 +17,7 @@ def validate_tflite_model():
     print("=" * 60)
 
     # Load dataset
-    data_path = Path(__file__).parent.parent.parent / "keypoint_classifier" / "keypoint.csv"
+    data_path = Path(__file__).parent.parent.parent / "model_artifacts" / "keypoint.csv"
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset not found: {data_path}")
 
@@ -25,7 +25,7 @@ def validate_tflite_model():
     X = df.iloc[:, 1:].values
     y = df.iloc[:, 0].values
 
-    # Use a fixed subset for validation (e.g., 15% of all data)
+    # Use a fixed subset for validation (15%)
     test_size = int(len(X) * 0.15)
     np.random.seed(42)
     indices = np.random.choice(len(X), test_size, replace=False)
@@ -42,6 +42,7 @@ def validate_tflite_model():
     keras_model = tf.keras.models.load_model(keras_model_path)
     interpreter = tf.lite.Interpreter(model_path=str(tflite_model_path))
     interpreter.allocate_tensors()
+
     input_details = interpreter.get_input_details()[0]
     output_details = interpreter.get_output_details()[0]
 
@@ -54,39 +55,46 @@ def validate_tflite_model():
     print("🔮 Predicting with TFLite model...")
     y_tflite = []
     for i in range(len(X_test)):
-        sample = X_test[i:i+1].astype(np.float32)
+        sample = X_test[i:i + 1]
         interpreter.set_tensor(input_details['index'], sample)
         interpreter.invoke()
-        output_data = interpreter.get_tensor(output_details['index'])
-        y_tflite.append(np.argmax(output_data))
+        output = interpreter.get_tensor(output_details['index'])
+        y_tflite.append(np.argmax(output))
+
     y_tflite = np.array(y_tflite)
 
     # Accuracy comparison
     keras_acc = accuracy_score(y_test, y_keras)
     tflite_acc = accuracy_score(y_test, y_tflite)
 
-    print(f"\n🎯 Keras accuracy:  {keras_acc:.3f} ({keras_acc*100:.1f}%)")
-    print(f"🎯 TFLite accuracy: {tflite_acc:.3f} ({tflite_acc*100:.1f}%)")
-    print(f"📉 Accuracy drop:   {(keras_acc - tflite_acc)*100:.2f}%")
+    print(f"\n🎯 Keras accuracy:  {keras_acc:.3f} ({keras_acc * 100:.1f}%)")
+    print(f"🎯 TFLite accuracy: {tflite_acc:.3f} ({tflite_acc * 100:.1f}%)")
+    print(f"📉 Accuracy drop:   {(keras_acc - tflite_acc) * 100:.2f}%")
 
-    # Classification report (TFLite) - UPDATED FOR 20 CLASSES
+    # ✅ UPDATED: 22 CLASS NAMES
     class_names = [
-        'afraid', 'agree', 'assistance', 'bad', 'become', 'college', 'doctor', 'from',
-        'pain', 'pray', 'secondary', 'skin', 'small', 'specific', 'stand', 'today',
-        'warn', 'which', 'work', 'you'
+        'afraid', 'agree', 'assistance', 'bad', 'become',
+        'college', 'doctor', 'from', 'how', 'pain',
+        'pray', 'secondary', 'skin', 'small', 'specific',
+        'stand', 'today', 'warn', 'where', 'which',
+        'work', 'you'
     ]
+
     print("\n📋 TFLite Classification Report:")
     print(classification_report(y_test, y_tflite, target_names=class_names))
 
-    # Plot comparison
+    # Plot accuracy comparison
     plt.figure(figsize=(8, 4))
-    plt.bar(['Keras', 'TFLite'], [keras_acc, tflite_acc], color=['steelblue', 'orange'])
+    plt.bar(['Keras', 'TFLite'], [keras_acc, tflite_acc])
     plt.ylim(0, 1)
     plt.ylabel("Accuracy")
     plt.title("Keras vs TFLite Accuracy")
+
     for i, acc in enumerate([keras_acc, tflite_acc]):
-        plt.text(i, acc + 0.01, f"{acc*100:.1f}%", ha='center')
+        plt.text(i, acc + 0.01, f"{acc * 100:.1f}%", ha='center')
+
     out_path = Path(__file__).parent.parent.parent / "presentation" / "tflite_comparison.png"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=300, bbox_inches='tight')
     plt.close()
 

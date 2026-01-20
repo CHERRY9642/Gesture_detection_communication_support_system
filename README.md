@@ -14,13 +14,61 @@ This project is a real-time gesture recognition system that uses computer vision
 ## Project Structure
 
 ```
-├── dataset/                # Raw image data for each gesture
-├── keypoint_classifier/    # Landmark CSVs and trained models
-├── notebooks/              # Scripts for data processing
-├── src/                    # Main source code for training and real-time app
-├── sentence_app/           # Web-based sentence building demo
-├── requirements.txt        # Project dependencies
-└── README.md               # This file
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── setup.py
+├── app/
+│   ├── app.js
+│   ├── backend.py
+│   ├── gesture_to_sentence_rules.json
+│   └── index.html
+├── dataset/
+│   ├── (afraid,agree,etc)/
+│   │   └── User_1...User_6
+├── model_artifacts/
+│   ├── keypoint_classifier_label.csv
+│   ├── keypoint.csv
+│   ├── keypoint_classifier/
+│   │   ├── keypoint_classifier.hdf5
+│   │   └── keypoint_classifier.tflite
+│   └── raw_landmarks/
+│       ├── afraid.csv
+│       ├── agree.csv
+│       └── ...
+├── notebooks/
+│   ├── 01_data_loading_and_integrity.ipynb
+│   ├── 02_data_cleaning.ipynb
+│   ├── 03_exploratory_data_analysis.ipynb
+│   ├── 04_feature_engineering.ipynb
+│   ├── 05_baseline_models.ipynb
+│   ├── 06_advanced_models.ipynb
+│   ├── 07_hyperparameter_tuning.ipynb
+│   ├── 08_model_interpretation.ipynb
+│   ├── 09_statistical_validation.ipynb
+│   ├── 10_business_optimization.ipynb
+│   └── 11_final_model_selection.ipynb
+├── presentation/
+│   ├── confusion_matrix.png
+│   ├── tflite_comparison.png
+│   └── training_history.png
+├── src/
+│   ├── data/
+│   │   ├── dataset_clean.py
+│   │   ├── extract_landmarks.py
+│   │   └── merge_datasets.py
+│   ├── inference/
+│   │   ├── check_images.py
+│   │   ├── check_landmarks_quality.py
+│   │   ├── data_preparation.py
+│   │   ├── test_mediapipe.py
+│   │   └── validate_tflite.py
+│   └── models/
+│       ├── __init__.py
+│       ├── app_realtime.py
+│       ├── export_tflite.py
+│       └── train_mlp.py
+└── venv/                   # Virtual environment
 ```
 
 ## Dependencies

@@ -1,5 +1,5 @@
-# notebooks/merge_datasets.py
-# Run from: final year project-landmarks/notebooks
+# src/data/merge_datasets.py
+# Run from: final year project-landmarks/src/data/merge_datasets.py
 
 import pandas as pd
 import numpy as np
@@ -9,10 +9,11 @@ from sklearn.utils import shuffle
 
 
 def merge_datasets():
-    """Merge 8 class CSVs into single keypoint.csv"""
+    """Merge all class CSVs into single keypoint.csv"""
 
     # Input directory (from src/data/ → ../../model_artifacts/raw_landmarks)
     raw_landmarks_dir = Path("../..") / "model_artifacts" / "raw_landmarks"
+
     # Output file (../../model_artifacts/keypoint.csv)
     output_file = Path("../..") / "model_artifacts" / "keypoint.csv"
 
@@ -21,7 +22,7 @@ def merge_datasets():
     print(f"Input dir:  {raw_landmarks_dir.resolve()}")
     print(f"Output csv: {output_file.resolve()}\n")
 
-    # Class mapping for verification
+    # ✅ UPDATED CLASS MAPPING (22 GESTURES)
     class_mapping = {
         'afraid': 0,
         'agree': 1,
@@ -31,27 +32,29 @@ def merge_datasets():
         'college': 5,
         'doctor': 6,
         'from': 7,
-        'pain': 8,
-        'pray': 9,
-        'secondary': 10,
-        'skin': 11,
-        'small': 12,
-        'specific': 13,
-        'stand': 14,
-        'today': 15,
-        'warn': 16,
-        'which': 17,
-        'work': 18,
-        'you': 19
+        'how': 8,
+        'pain': 9,
+        'pray': 10,
+        'secondary': 11,
+        'skin': 12,
+        'small': 13,
+        'specific': 14,
+        'stand': 15,
+        'today': 16,
+        'warn': 17,
+        'where': 18,
+        'which': 19,
+        'work': 20,
+        'you': 21
     }
 
     all_dfs = []
     class_stats = {}
     total_samples = 0
 
-    # Step 1: Load all 8 CSVs
+    # Step 1: Load all class CSVs
     print("📂 Loading class files...")
-    for class_name in class_mapping.keys():
+    for class_name, expected_class_id in class_mapping.items():
         csv_file = raw_landmarks_dir / f"{class_name}.csv"
 
         if not csv_file.exists():
@@ -65,7 +68,6 @@ def merge_datasets():
         if df.shape[1] != expected_cols:
             print(f"⚠️  {class_name}: {df.shape[1]} columns (expected {expected_cols})")
 
-        expected_class_id = class_mapping[class_name]
         actual_class_ids = df['class'].unique()
         if expected_class_id not in actual_class_ids:
             print(f"⚠️  {class_name}: Expected class_id {expected_class_id}, found {actual_class_ids}")
@@ -79,7 +81,7 @@ def merge_datasets():
     if not all_dfs:
         raise ValueError("❌ No valid CSV files found!")
 
-    # Step 2: Concatenate all DataFrames vertically
+    # Step 2: Merge all DataFrames
     print(f"\n🔀 Merging {len(all_dfs)} class files...")
     merged_df = pd.concat(all_dfs, ignore_index=True)
     print(f"📊 Merged shape: {merged_df.shape}")
@@ -91,7 +93,7 @@ def merge_datasets():
     nan_count = merged_df.isnull().sum().sum()
     print(f"NaN values: {nan_count:,}")
 
-    feature_cols = merged_df.columns[1:]  # exclude 'class'
+    feature_cols = merged_df.columns[1:]
     min_val = merged_df[feature_cols].min().min()
     max_val = merged_df[feature_cols].max().max()
     print(f"Feature range: [{min_val:.3f}, {max_val:.3f}] ✓")
@@ -104,14 +106,14 @@ def merge_datasets():
 
     # Step 4: Shuffle dataset
     print("\n🔀 Shuffling dataset...")
-    final_df = shuffle(merged_df, random_state=42, n_samples=len(merged_df))
+    final_df = shuffle(merged_df, random_state=42)
 
-    # Step 5: Save final dataset
+    # Step 5: Save merged dataset
     print(f"\n💾 Saving to {output_file}...")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     final_df.to_csv(output_file, index=False)
 
-    # Step 6: Final statistics
+    # Step 6: Final stats
     print("\n" + "=" * 60)
     print("🎉 PHASE 3 COMPLETE!")
     print(f"📊 Final dataset: {len(final_df):,} rows × {len(final_df.columns)} columns")
@@ -122,10 +124,12 @@ def merge_datasets():
     print("-" * 40)
     print(f"{'Class':<12} {'Samples':<8} {'Percentage'}")
     print("-" * 40)
+
     for class_id, count in class_dist.items():
         class_name = [k for k, v in class_mapping.items() if v == class_id][0]
         pct = (count / total_samples) * 100
         print(f"{class_name:<12} {count:<8,} {pct:>6.1f}%")
+
     print("-" * 40)
     print(f"TOTAL:        {total_samples:<8,} 100.0%")
 
@@ -153,6 +157,6 @@ def verify_dataset():
 
 
 if __name__ == "__main__":
-    dataset = merge_datasets()
+    merge_datasets()
     verify_dataset()
     print("\n🚀 Ready for PHASE 4: Model Training!")
