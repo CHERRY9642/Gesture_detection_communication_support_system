@@ -7,7 +7,7 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
-
+notebooks_data/
 # Datasets and large media files (add your dataset/ folder)
 dataset/
 .vscode/
