@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Gesture AI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fas fa-hand-sparkles" style="font-size: 2rem; color: var(--primary);"></i>
+                <h1>Gesture AI</h1>
+            </div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='/'"><i class="fas fa-video"></i> Live Inference</li>
+                <li class="active" onclick="window.location.href='/analytics'"><i class="fas fa-chart-pie"></i>
+                    Analytics</li>
+                <!-- Logs can be on analytics or separate, putting it here as a sub-feature or separate link -->
+                <!-- <li onclick="window.location.href='/logs'"><i class="fas fa-database"></i> Data Logs</li> -->
+            </ul>
+            <div style="margin-top: auto;">
+                <a href="/logout" class="btn-secondary" style="width: 100%; text-align: center; display: block;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <!-- Navbar -->
+            <header class="top-navbar glass-panel">
+                <div class="current-page">
+                    <h2 class="page-title">Business Analytics</h2>
+                    <span class="status-badge">DATA: prediction_logs.csv</span>
+                </div>
+                <div class="nav-actions">
+                    <button class="icon-btn" onclick="updateDashboard()" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <span style="font-weight: 500;">Hello, <span style="color: var(--primary);">{{ user }}</span></span>
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                    <button class="mobile-menu-toggle icon-btn"
+                        onclick="document.querySelector('.sidebar').classList.toggle('open')">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="main-view">
+
+                <!-- KPIs -->
+                <div class="kpi-row">
+                    <div class="kpi-card glass-panel">
+                        <h3>Total Predictions</h3>
+                        <p id="kpi-total">Loading...</p>
+                        <i class="fas fa-chart-bar"
+                            style="position: absolute; bottom: 20px; right: 20px; opacity: 0.1; font-size: 3rem;"></i>
+                    </div>
+                    <div class="kpi-card glass-panel">
+                        <h3>Top Gesture</h3>
+                        <p id="kpi-top">Loading...</p>
+                        <i class="fas fa-thumbs-up"
+                            style="position: absolute; bottom: 20px; right: 20px; opacity: 0.1; font-size: 3rem;"></i>
+                    </div>
+                    <div class="kpi-card glass-panel">
+                        <h3>Avg Accuracy</h3>
+                        <p id="kpi-acc">Loading...</p>
+                        <i class="fas fa-bullseye"
+                            style="position: absolute; bottom: 20px; right: 20px; opacity: 0.1; font-size: 3rem;"></i>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 2rem;">Model Performance Analysis</h3>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-panel">
+                        <h3>Prediction Confidence Trend</h3>
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                    <div class="chart-card glass-panel">
+                        <h3>Gesture Class Distribution</h3>
+                        <canvas id="distChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Risk Table (Full Width) -->
+                <div class="glass-panel" style="margin-top: 2rem; padding: 2rem; overflow-x: auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>Low Confidence Predictions (Risk Monitor)</h3>
+                        <button onclick="window.location.href='/api/export_logs'" class="btn-primary"
+                            style="width: auto; padding: 0.5rem 1.5rem;">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                    </div>
+                    <table class="risk-table" style="width: 100%; border-collapse: collapse; margin-top: 1.5rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+                                <th style="padding: 12px;">Timestamp</th>
+                                <th style="padding: 12px;">Predicted Gesture</th>
+                                <th style="padding: 12px;">Confidence Score</th>
+                                <th style="padding: 12px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risk-table-body"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/ui.js"></script>
+    <script src="/static/js/charts.js"></script>
+</body>
+
+</html>

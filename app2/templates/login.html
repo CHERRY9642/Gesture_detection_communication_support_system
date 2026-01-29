@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Gesture AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="auth-body">
+
+    <div class="theme-toggle-container">
+        <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="auth-container glass-panel">
+        <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to access your dashboard</p>
+        </div>
+
+        <form id="login-form">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Login <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/signup">Sign up</a></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+</body>
+
+</html>
