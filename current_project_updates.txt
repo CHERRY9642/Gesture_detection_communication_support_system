@@ -613,8 +613,6 @@ Webcam Input → MediaPipe Landmarks → Feature Vector (42D) → MLP Classifier
 * Meets all functional requirements for the project
 * Bridge the gap in human-computer interaction for the impaired
 
----
-
 ## ✅ THIS IS:
 
 ✔ 100% aligned with your project updates
