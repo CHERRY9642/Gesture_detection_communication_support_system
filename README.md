@@ -1,3 +1,5 @@
+DEMO VIDEO LINK:  https://drive.google.com/file/d/1-h7pn3HUCkcE2X2Du8DrDr4AWzJZT503/view?usp=sharing
+
 # Sign Language & Gesture Recognition
 
 This project is a real-time gesture recognition system that uses computer vision to detect and classify hand gestures from a webcam feed. It is built with MediaPipe for landmark extraction and a TensorFlow/Keras model for classification. The system is designed to recognize a vocabulary of signs, with a pipeline for data collection, training, and real-time inference.
