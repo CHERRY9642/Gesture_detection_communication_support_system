@@ -28,6 +28,11 @@ dataset/
 .idea/
 
 # Documents
-Hand Gesture Recognition.docx
 *.docx
 *.pptx
+*.pdf
+
+# Images / Diagrams
+*.png
+*.jpg
+*.jpeg

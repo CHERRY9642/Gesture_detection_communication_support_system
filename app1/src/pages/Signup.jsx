@@ -1,12 +1,46 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock signup - just redirect to dashboard
-    navigate('/dashboard');
+    
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Get existing users
+    const existingUsers = JSON.parse(localStorage.getItem('gesture_ai_users') || '[]');
+    
+    // Check if email exists
+    if (existingUsers.some(u => u.email === formData.email)) {
+      alert("Email already exists!");
+      return;
+    }
+
+    // Add new user
+    const newUser = {
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password // Note: In a real app, this should be hashed
+    };
+
+    localStorage.setItem('gesture_ai_users', JSON.stringify([...existingUsers, newUser]));
+    alert("Account created successfully! Please log in.");
+    navigate('/login');
   };
 
   return (
@@ -21,22 +55,50 @@ export default function Signup() {
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>
-            <input type="text" placeholder="John Doe" required />
+            <input 
+              name="fullName"
+              type="text" 
+              placeholder="John Doe" 
+              required 
+              value={formData.fullName}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="form-group">
             <label>Email Address</label>
-            <input type="email" placeholder="name@example.com" required />
+            <input 
+              name="email"
+              type="email" 
+              placeholder="name@example.com" 
+              required 
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
           
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" required />
+            <input 
+              name="password"
+              type="password" 
+              placeholder="••••••••" 
+              required 
+              value={formData.password}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="form-group">
             <label>Confirm Password</label>
-            <input type="password" placeholder="••••••••" required />
+            <input 
+              name="confirmPassword"
+              type="password" 
+              placeholder="••••••••" 
+              required 
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
           </div>
 
           <button type="submit" className="btn-auth-primary">

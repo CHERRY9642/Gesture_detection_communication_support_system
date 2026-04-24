@@ -21,69 +21,50 @@ const GESTURE_CLASSES = [
     'where', 'which', 'work', 'you'
 ];
 
-// ── Generate plausible mock data ──────────────────────────────────────────────
-function generateMockData() {
-    const hours = Array.from({ length: 30 }, (_, i) => {
-        const d = new Date();
-        d.setMinutes(d.getMinutes() - (30 - i) * 2);
-        return d.toTimeString().slice(0, 5);
-    });
-    const confValues = hours.map(() => parseFloat((0.6 + Math.random() * 0.38).toFixed(3)));
-
-    const dist = {};
-    GESTURE_CLASSES.slice(0, 8).forEach(g => { dist[g] = Math.floor(Math.random() * 150) + 30; });
-
-    const riskLogs = Array.from({ length: 10 }, (_, i) => ({
-        Timestamp: `2026-03-09 ${String(8 + Math.floor(Math.random() * 8)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-        Predicted_Gesture: GESTURE_CLASSES[Math.floor(Math.random() * GESTURE_CLASSES.length)],
-        Confidence: parseFloat((0.3 + Math.random() * 0.38).toFixed(3)),
-    }));
-
-    const total = Object.values(dist).reduce((a, b) => a + b, 0) + Math.floor(Math.random() * 200);
-    const topGesture = Object.entries(dist).sort((a, b) => b[1] - a[1])[0][0];
-    const avgConf = parseFloat((confValues.reduce((a, b) => a + b, 0) / confValues.length * 100).toFixed(1));
-
-    return {
-        kpi: { total, top_gesture: topGesture, avg_confidence: avgConf },
-        charts: { trends: hours.map((t, i) => ({ Timestamp: `2026-03-09 ${t}:00`, Confidence: confValues[i] })), distribution: dist },
-        risk_list: riskLogs,
-        accuracy: 96.4,
-        f1score: 95.8,
-        precision: 96.1,
-        recall: 95.5,
-    };
-}
+const STATIC_DATA = {
+    kpi: { total: 12453, top_gesture: 'assistance', avg_confidence: 94.2 },
+    charts: {
+        trends: [
+            { Timestamp: '2026-03-09 10:00:00', Confidence: 0.92 },
+            { Timestamp: '2026-03-09 10:05:00', Confidence: 0.94 },
+            { Timestamp: '2026-03-09 10:10:00', Confidence: 0.89 },
+            { Timestamp: '2026-03-09 10:15:00', Confidence: 0.95 },
+            { Timestamp: '2026-03-09 10:20:00', Confidence: 0.93 },
+            { Timestamp: '2026-03-09 10:25:00', Confidence: 0.91 },
+            { Timestamp: '2026-03-09 10:30:00', Confidence: 0.96 },
+            { Timestamp: '2026-03-09 10:35:00', Confidence: 0.94 },
+        ],
+        distribution: {
+            'assistance': 450,
+            'doctor': 320,
+            'college': 280,
+            'bad': 150,
+            'pray': 210,
+            'work': 190,
+            'from': 120,
+            'skin': 90
+        }
+    },
+    risk_list: [
+        { Timestamp: '2026-03-09 10:12:45', Predicted_Gesture: 'warn', Confidence: 0.62 },
+        { Timestamp: '2026-03-09 09:45:12', Predicted_Gesture: 'small', Confidence: 0.58 },
+        { Timestamp: '2026-03-09 09:10:33', Predicted_Gesture: 'bad', Confidence: 0.65 },
+        { Timestamp: '2026-03-09 08:55:01', Predicted_Gesture: 'today', Confidence: 0.69 },
+    ],
+    accuracy: 96.4,
+    f1score: 95.8,
+    precision: 96.1,
+    recall: 95.5,
+};
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const PALETTE = ['#4f46e5', '#ec4899', '#10b981', '#f59e0b', '#6366f1', '#14b8a6', '#f43f5e', '#a855f7'];
 
 export default function Analytics() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [lastUpdated, setLastUpdated] = useState('');
+    const [data] = useState(STATIC_DATA);
+    const [lastUpdated] = useState('Apr 03, 2026, 10:45 AM');
 
-    const fetchData = () => {
-        setLoading(true);
-        // Using mock data for frontend deployment
-        setData(generateMockData());
-        setLastUpdated(new Date().toLocaleTimeString());
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        fetchData();
-        const id = setInterval(fetchData, 10000);
-        return () => clearInterval(id);
-    }, []);
-
-    if (loading || !data) {
-        return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ fontSize: '2rem', animation: 'spin 1s linear infinite' }}>⏳</div>
-                <p style={{ color: 'var(--text-muted)' }}>Loading analytics…</p>
-            </div>
-        );
-    }
+    if (!data) return null;
 
     // Chart configs
     const trendConfig = {
@@ -131,7 +112,7 @@ export default function Analytics() {
                     <p className="nav-label" style={{ margin: 0 }}>Last updated: {lastUpdated}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className="icon-btn" onClick={fetchData} title="Refresh">🔄</button>
+                    <button className="icon-btn" onClick={() => alert('Static data refreshed.')} title="Refresh">🔄</button>
                 </div>
             </div>
 
